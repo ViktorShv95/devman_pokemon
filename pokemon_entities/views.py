@@ -92,7 +92,7 @@ def show_pokemon(request, pokemon_id):
             pokemon_data['previous_evolution']['img_url'] = pokemon.previous_evolution.picture.url
 
     try:
-        next_evolution = pokemon.next_evolutions.all()[0]
+        next_evolution = pokemon.next_evolutions.first()
         if next_evolution:
             pokemon_data['next_evolution'] = {
                 'title_ru': next_evolution.title,
@@ -100,9 +100,8 @@ def show_pokemon(request, pokemon_id):
             }
             if next_evolution.picture:
                 pokemon_data['next_evolution']['img_url'] = next_evolution.picture.url
-    except:
-        return render(request, "pokemon.html", context={'map': folium_map._repr_html_(),
-                                                        'pokemon': pokemon_data})
+    except (IndexError, ObjectDoesNotExist):
+        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
 
     return render(request, "pokemon.html", context={'map': folium_map._repr_html_(),
